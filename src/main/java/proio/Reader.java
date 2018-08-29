@@ -2,6 +2,8 @@ package proio;
 
 import com.google.protobuf.ByteString;
 import com.google.protobuf.CodedInputStream;
+import com.google.protobuf.DescriptorProtos;
+import com.google.protobuf.Descriptors;
 import com.google.protobuf.InvalidProtocolBufferException;
 import java.io.ByteArrayInputStream;
 import java.io.FileInputStream;
@@ -21,6 +23,8 @@ public class Reader implements Iterable<Event>, Iterator<Event> {
   private long bucketEventsRead = 0;
   private long bucketIndex = 0;
   private Map<String, ByteString> metadata = new HashMap<String, ByteString>();
+  private Map<String, Descriptors.FileDescriptor> fileDescriptors =
+      new HashMap<String, Descriptors.FileDescriptor>();
 
   private Event queuedEvent = null;
 
@@ -96,6 +100,10 @@ public class Reader implements Iterable<Event>, Iterator<Event> {
     readHeader();
   }
 
+  public Map<String, Descriptors.FileDescriptor> getFileDescriptors() {
+    return fileDescriptors;
+  }
+
   public void close() throws IOException {
     if (fileStream != null) {
       fileStream.close();
@@ -145,8 +153,28 @@ public class Reader implements Iterable<Event>, Iterator<Event> {
     bucketHeader = Proto.BucketHeader.parseFrom(stream);
     stream.popLimit(headerLimit);
 
+    // Set metadata for future events
     for (Map.Entry<String, ByteString> entry : bucketHeader.getMetadataMap().entrySet()) {
       metadata.put(entry.getKey(), entry.getValue());
+    }
+
+    // Add descriptors to pool owned by reader
+    for (ByteString data : bucketHeader.getFileDescriptorList()) {
+      DescriptorProtos.FileDescriptorProto fdProto =
+          DescriptorProtos.FileDescriptorProto.parseFrom(data);
+      Descriptors.FileDescriptor[] deps =
+          new Descriptors.FileDescriptor[fdProto.getDependencyCount()];
+      for (int i = 0; i < fdProto.getDependencyCount(); i++) {
+        deps[i] = fileDescriptors.get(fdProto.getDependency(i));
+        if (deps[i] == null) {
+          throw new IOException("Missing file descriptor dependency in stream");
+        }
+      }
+      try {
+        fileDescriptors.put(fdProto.getName(), Descriptors.FileDescriptor.buildFrom(fdProto, deps));
+      } catch (Descriptors.DescriptorValidationException e) {
+        throw new IOException("Could not validate file descriptor from stream");
+      }
     }
   }
 

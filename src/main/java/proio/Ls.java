@@ -1,12 +1,11 @@
 package proio;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import com.google.protobuf.ByteString;
 import com.google.protobuf.Descriptors;
 import com.google.protobuf.Message;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class Ls {
   public static void main(String[] args) {
@@ -20,6 +19,8 @@ public class Ls {
 
       int nEvents = 0;
       Map<String, ByteString> lastMetadata = new HashMap<String, ByteString>();
+      Map<String, Descriptors.FileDescriptor> lastFileDescriptors =
+          new HashMap<String, Descriptors.FileDescriptor>();
       for (Event event : reader) {
         Map<String, ByteString> metadata = event.getMetadata();
         for (Map.Entry<String, ByteString> entry : metadata.entrySet()) {
@@ -28,6 +29,16 @@ public class Ls {
           }
         }
         lastMetadata = metadata;
+        Map<String, Descriptors.FileDescriptor> fileDescriptors = reader.getFileDescriptors();
+        for (Map.Entry<String, Descriptors.FileDescriptor> entry : fileDescriptors.entrySet()) {
+          if (lastFileDescriptors.get(entry.getKey()) != entry.getValue()) {
+            System.out.println("FILE DESCRIPTOR: " + entry.getKey());
+            System.out.println("-------------------");
+            System.out.println(entry.getValue().toProto().toString());
+            System.out.println("-------------------");
+          }
+        }
+        lastFileDescriptors = fileDescriptors;
         System.out.println("EVENT: " + nEvents);
         for (String tag : event.getTags()) {
           System.out.println(tag);
