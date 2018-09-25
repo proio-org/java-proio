@@ -3,6 +3,8 @@
 [![codecov](https://codecov.io/gh/proio-org/java-proio/branch/master/graph/badge.svg)](https://codecov.io/gh/proio-org/java-proio)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/3540d7b51d034acc8bd47ffac45d32fd)](https://www.codacy.com/app/proio-org/java-proio?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=proio-org/java-proio&amp;utm_campaign=Badge_Grade)
 
+Please see the [main proio repository](https://github.com/proio-org/proio) for general information on proio.
+
 ## Installation
 At this time, proio is not yet available in the maven central repository.
 However, maven can be used to easily build a jar file.
