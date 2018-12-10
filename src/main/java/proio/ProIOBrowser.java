@@ -538,16 +538,14 @@ public class ProIOBrowser extends javax.swing.JFrame {
     JFileChooser chooser = new JFileChooser();
     chooser.showOpenDialog(null);
     f = chooser.getSelectedFile();
-    filename = f.getAbsolutePath();
-
-    File_label.setText(filename);
-
     try {
+      filename = f.getAbsolutePath();
+      File_label.setText(filename);
+
       reader = new Reader(filename);
 
       int nEvents = 0;
       for (Event event : reader) {
-
         nEvents++;
       }
       eventnumlabel.setText(String.valueOf(nEvents));
@@ -689,7 +687,12 @@ public class ProIOBrowser extends javax.swing.JFrame {
   private void NextButtonActionPerformed(java.awt.event.ActionEvent evt) {
     // TODO add your handling code here:
     String i = eventnumbersearchfield.getText();
-    long t = Long.parseLong(i);
+    long t = -1;
+    try {
+        t = Long.parseLong(i);
+    } catch (NumberFormatException e) {
+        ;
+    }
 
     long p = Long.parseLong(eventnumlabel.getText());
     long q = t + 1;
