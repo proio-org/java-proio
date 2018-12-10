@@ -562,10 +562,7 @@ public class ProIOBrowser extends javax.swing.JFrame {
     long v = Long.parseLong(this.eventnumbersearchfield.getText());
     long p = Long.parseLong(eventnumlabel.getText());
     DefaultListModel model = new DefaultListModel();
-    if (p - 1 == v) {
-      long z = v - 1;
-      eof(z);
-    } else if (v >= 0 && v <= p) {
+    if (v >= 0 && v <= p) {
       try {
         reader.seekToStart();
         reader.skip(v);
@@ -696,10 +693,7 @@ public class ProIOBrowser extends javax.swing.JFrame {
 
     long p = Long.parseLong(eventnumlabel.getText());
     long q = t + 1;
-    if (p - 1 == q) {
-      eof(q - 1);
-    } else if (q >= p) {
-
+    if (q >= p) {
       q = p;
       JFrame frame = null;
       JOptionPane.showMessageDialog(frame, "End of the file.");
@@ -855,40 +849,5 @@ public class ProIOBrowser extends javax.swing.JFrame {
     this.TagList.setModel(model);
     this.TagList.revalidate();
     this.TagList.repaint();
-  }
-
-  private void eof(long par) {
-    String g = "";
-    String h = "";
-
-    try {
-      reader = new Reader(filename);
-    } catch (IOException ex) {
-      Logger.getLogger(ProIOBrowser.class.getName()).log(Level.SEVERE, null, ex);
-    }
-    Event storeevent = null;
-    Event tmpEvent;
-    while (true) {
-      tmpEvent = null;
-      try {
-        tmpEvent = reader.next(true);
-      } catch (Throwable e) {;
-      }
-      if (tmpEvent == null) {
-        break;
-      }
-      storeevent = tmpEvent;
-    }
-    Map<String, ByteString> metadata = storeevent.getMetadata();
-    for (Map.Entry<String, ByteString> entry : metadata.entrySet()) {
-      if (entry.getValue().size() < 1000) {
-        g = ("Metadata: " + entry.getKey() + ": " + entry.getValue().toStringUtf8() + "\n");
-        h += g;
-      }
-    }
-
-    EntryData.setText(h);
-    EntryData.revalidate();
-    EntryData.repaint();
   }
 }
