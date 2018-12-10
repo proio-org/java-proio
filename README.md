@@ -20,9 +20,8 @@ git submodule update
 mvn install
 ```
 
-## Running the "Ls" tool
-This is a tool that serves as an example for a browser tool.  This one is
-simple and only dumps text to the terminal.
+## Running the "ProIOBrowser" tool
+This is an initial draft of a GUI browser by Jose Alcaraz (@chuwyjr).
 ```shell
-java --illegal-access=deny -cp target/proio-*-jar-with-dependencies.jar proio.Ls sample.proio | less
+java -cp target/proio-*-jar-with-dependencies.jar proio.ProIOBrowser
 ```
