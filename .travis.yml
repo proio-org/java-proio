@@ -9,7 +9,7 @@ matrix:
     include:
         - language: java
           stage: build
-          jdk: openjdk8
+          jdk: openjdk11
           install:
               - docker pull $DOCKER_AUX_REPO
               - sudo cp ci/protoc /bin/protoc
